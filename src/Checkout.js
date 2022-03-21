@@ -77,21 +77,6 @@ const [post, setPost] = useState('')
     }
 
 
-    // {
-    //     "merchantId": "ckzhiy3bs0002yzn19o14c3z5",
-    //     "_uid": "ea5dcb1083d342f3a070dea705e87122",
-    //     "method": "card",
-    //     "encryptedData": {
-    //         "pan": "5399 0000 9000 9009",
-    //         "cvv": "544",
-    //         "expiry": {
-    //             "month": "02",
-    //             "year": "2025"
-    //         }
-    //     }
-    // }
-
-
     const handleSubmit = (e) => {
         e.preventDefault()
        
@@ -133,6 +118,8 @@ const [post, setPost] = useState('')
 //console.log(newDIV, 'FROM QUERY')
 
     console.log(params, 'from checkout')
+
+    
     return (
         <Container>
         <First>
