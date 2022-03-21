@@ -11,3 +11,69 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+
+
+.bank{
+  width: 90%;
+  height: 46px;
+  background: #F0F1F6;
+  border-radius: 8px;
+  border:none;
+  }
+  
+  .amountInp{
+    width: 90%;
+    height: 46px;
+    background: #F0F1F6;
+    border-radius: 8px;
+    border:none;
+  }
+  
+  .amountInp:focus{
+    outline: none;
+  }
+
+
+  .card_inp{
+    width: 90%;
+    height: 43px;
+    background:#F5F5F9;
+    border:transparent;
+    margin-left:0.5rem;
+    }
+    
+    .card_inp:focus{
+        outline:none;
+    }
+    
+    
+    .expiration {
+      border: none;
+    }
+    .expiration input {
+      height: 43px;
+      background:#F5F5F9;
+      border: 0;
+    }
+    
+    .expiration input:focus {
+      outline: none;
+    }
+    
+    .cvv_inp{
+      height: 43px;
+      background: #F5F5F9;
+      border: none;
+    }
+    
+    .cvv_inp:focus{
+      outline: none;
+    }
+
+
+    .payform_iframe{
+      height: 500px !important;
+    }
+
+    
