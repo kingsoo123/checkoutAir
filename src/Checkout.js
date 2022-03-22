@@ -7,7 +7,7 @@ import logo from "./assets/airvendlogo2.svg"
 import cancel from "./assets/cancel.svg"
 import secured from "./assets/secured.svg"
 import { css } from "@emotion/react";
-import { send_initialize_pay, show_result } from "./Actions/Creators/CheckoutAction"
+import { send_initialize_pay, show_result, start_checkout } from "./Actions/Creators/CheckoutAction"
 import FadeLoader from "react-spinners/FadeLoader";
 import failedImg from "./assets/failed.png";
 
@@ -38,13 +38,36 @@ const [cvv, setCvv] = useState(null)
     const [checkStatus, setCheckStatus] = useState(false)
     const [showFailed, setShowFailed] = useState(false)
     let [loading, setLoading] = useState(false);
-
+    const [echoForm, setEchoform] = useState('')
+    const [paReq, setPaReq] = useState('')
+    const [termUrl, setTermUrl] = useState('')
+    const [md, setMd] = useState('')
 const [post, setPost] = useState('')
     
     
+    
+    console.log(params, 'from paramssssss')
+    useEffect(() => {
+        dispatch(start_checkout({
+            merchantId: "cl00qk8wc0002bnn1bwirdebh",
+            customer: {
+                email: "test@gmail.com"
+            },
+            items: [{
+                name: "test",
+                amount: 1000
+            }],
+            callback: {
+                webhook: "https://webhook.com"
+            }
+    }))
+    }, [dispatch])
+    
+
     //console.log(window.location.href, ' from locationmnnnnnn')
 
-    console.log(paymentStatus, 'result')
+    //console.log(paymentStatus.data.echoForm, 'echo form')
+    //console.log(paymentStatus, 'from start checkout reducer')
 
     //5399832641760040
     const encryptedData = {
@@ -56,7 +79,7 @@ const [post, setPost] = useState('')
         }
     }
 
- console.log(encryptedData, 'from card')
+ //console.log(encryptedData, 'from card')
 
     //var ciphertext = CryptoJS.AES.encrypt(JSON.stringify(encryptedData), 'kmk0603670a0a130043cea4849a5220a').toString();
     let m_key = 'kmk0603670a0a130043cea4849a5220a'
@@ -67,11 +90,11 @@ const [post, setPost] = useState('')
       mode: CryptoJS.mode.CBC,
       padding: CryptoJS.pad.Pkcs7,
     })
-    console.log(ciphertext.toString(), 'from ciphyer texttttttt')
+    //console.log(ciphertext.toString(), 'from ciphyer texttttttt')
 
     const data = {
         merchantId: "cl00qk8wc0002bnn1bwirdebh",
-        _uid: "f62c0759e7214256a7c782a6ea2f9cac",
+        _uid: paymentStatus.startCheck._uid,
         method: "card",
         encryptedData: ciphertext.toString()
     }
@@ -79,15 +102,21 @@ const [post, setPost] = useState('')
 
     const handleSubmit = (e) => {
         e.preventDefault()
-       
         dispatch(send_initialize_pay(data))
         setCheckStatus(true)
         setLoading(true)
+
+        // setEchoform(paymentStatus.data.echoForm)
+        // setPaReq(paymentStatus.data.pareq)
+        // setTermUrl(paymentStatus.data.termUrl)
+        // setMd(paymentStatus.data.md)
+
+
+        // setTimeout(() => {
+        //     setPost('Post')
+        // }, 3000);
         setTimeout(() => {
-            setPost('Post')
-        }, 3000);
-        setTimeout(() => {
-            formRef.current.submit();
+                formRef.current.submit();
         }, 3000);
 
 
@@ -105,7 +134,6 @@ const [post, setPost] = useState('')
 
     useEffect(() => {
         if (paymentStatus.result !== '') {
-            console.log(paymentStatus.result, 'from payment failed')
             if (paymentStatus?.result === 'Payment Failed') {
                 setLoading(false)
                 setShowFailed(true)
@@ -114,12 +142,9 @@ const [post, setPost] = useState('')
     },[paymentStatus.result])
    
 
-    //let newDIV = document.getElementById("code").innerHTML = htsrc
-//console.log(newDIV, 'FROM QUERY')
 
-    console.log(params, 'from checkout')
 
-    
+
     return (
         <Container>
         <First>
@@ -137,15 +162,15 @@ const [post, setPost] = useState('')
                 </div>
                 <ContentDiv>
                     <CustDetails>
-                            <Grayish>Pay</Grayish>
-                            <Blackish>N800.00</Blackish>
+                        <Grayish>Pay: &nbsp;</Grayish>
+                        <Blackish>₦{paymentStatus.startCheck._amount }</Blackish>
                     </CustDetails>
                     <CustDetails>
-                            <Grayish>ID:</Grayish>
-                            <Blackish>5B49a047188af5B49a047188af</Blackish>
+                            <Grayish>ID: &nbsp;</Grayish>
+                        <Blackish>{paymentStatus.startCheck._uid }</Blackish>
                     </CustDetails>
                     <CustDetails>
-                            <Grayish>Memo:</Grayish>
+                            <Grayish>Memo: &nbsp;</Grayish>
                             <Blackish>Payment for delivery</Blackish>
                     </CustDetails>
 
@@ -207,7 +232,7 @@ const [post, setPost] = useState('')
                         </>
                     ) : (
                             <div style={{width:'100%', height: 280, display:'flex', justifyContent:'center', alignItems:'center'}}>
-                            {loading === true ? <FadeLoader loading={loading} css={override} size={10} color={"#493CD1"} /> : showFailed === true ? <imgh src={failedImg} alt="failed"/> : 'not failed' }
+                            {loading === true ? <FadeLoader loading={loading} css={override} size={10} color={"#493CD1"} /> : showFailed === true ? <img src={failedImg} alt="failed"/> : 'not failed' }
                             </div>
                     )}
                     <CardButton onClick={handleSubmit}>
@@ -218,10 +243,10 @@ const [post, setPost] = useState('')
                     </CardFooter>
                 </ContentDiv>
             </Card>
-            <form ref={formRef} name="echoForm" action="https://mtf.gateway.mastercard.com/acs/MastercardACS/a6360ad7-fc7e-4a10-af18-69aeeb9f1702" method={post} id="formurl" target="https://mtf.gateway.mastercard.com/acs/MastercardACS/a6360ad7-fc7e-4a10-af18-69aeeb9f1702">
-            <input type="hidden" name="PaReq" value="eAFVUttugkAQfTfxHwjPLbtcllIzrkHFS4yEKE0a3xA2SiugiFVf+zH9sH5JZ1Fru+GBc87OcOYM0DllG+VDlPu0yNuqrlFVEXlcJGm+aqsv4eDRUTu82YBwXQrRn4v4UAoOU7HfRyuhpAnWUDy6RU3TdKjKIXBnYsfh2pNjS80AcoNYWsbrKK84RPGuO/Y5wzpmArlCyEQ57vNh2LWY/eQ8e1QHcuEgjzIhFdefKFNv1hu5fqiE3jwEUksQF4e8Ks/csSiQG4BDueHrqtq2CDkej9qqWkb5uxYXGRApAbl7Cg7S3R5HPKUJD/1J0FuuBq8sSexQvC2TRZCed4uj7bWByBuQRJXgBjXkYym609KNloXT1DxEmTTE/aGvfH9+6Q+YlEbR2pWHrfyce7lU54jaXw4w7hL3cebMtnGiGwJx2ha5wNYY7e87kLv93kgGHFcYJdMN02JyS/VxZNS1ILukmJbB6KWNBEBkKbluEaOpN43Mvz+g2fgBSw+2Mg=="/><br/><br/>
-            <input type="hidden" name="TermUrl" value="http://paymentservice-env.eba-75m6a2xq.us-east-1.elasticbeanstalk.com/v1/pay/KrerzTmxWN1ZERnIqxGRXIg6dftagJT_1Ab73ajXwzwZOYQz-EPfAMAvZa16_KDpkwgwKUcqCqJKUWZXcHU0Qw=="/><br/><br/>
-            <input type="hidden" name="MD" value=""/>
+            <form ref={formRef} name="echoForm" action={paymentStatus.data.echoForm} method='Post' id="formurl" target={paymentStatus.data.echoForm}>
+                <input type="hidden" name="PaReq" value={ paymentStatus.data.pareq}/><br/><br/>
+                <input type="hidden" name="TermUrl" value={paymentStatus.data.termUrl }/><br/><br/>
+                <input type="hidden" name="MD" value={paymentStatus.data.md}/>
             </form>
     </Container>
     )

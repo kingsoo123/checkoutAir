@@ -6,8 +6,10 @@ import config from "../config";
 const baseURL = config().secrets.apiHost;
 
 
-
-
+export const startCheckout = async (data) => {
+    const response = await axios.post(`${baseURL}/v1/initialize`, data);
+    return response;
+};
 
 export const initialize_pay = async (data) => {
     const response = await axios.post(`${baseURL}/v1/pay`, data);
